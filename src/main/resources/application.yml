@@ -1,0 +1,28 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update # WILL BE REMOVED WHEN LIQUIBASE IS RUNNING
+    show-sql: true
+  application:
+    name: "message-receiver-api"
+  h2:
+    console:
+      enabled: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/message-receiver-api
+    username: postgres
+    password: postgres
+
+chat:
+  queues:
+    output: "na"
+  exchanges:
+    input: "user-events"
+    output: "incoming-messages"
