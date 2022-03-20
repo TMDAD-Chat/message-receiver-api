@@ -14,8 +14,8 @@ import java.util.*;
 @NoArgsConstructor
 public class UserEntity {
     @Id
-    @Column(name = "id", nullable = false)
-    private Long id;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @ManyToMany(mappedBy = "users")
     @ToString.Exclude

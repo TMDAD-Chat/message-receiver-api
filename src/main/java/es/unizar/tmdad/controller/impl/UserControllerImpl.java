@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserControllerImpl implements UserController {
 
-    private final String MY_USER_ID_TEMP = "1"; //REMOVE LATER
+    private final String MY_USER_NAME_TEMP = "test"; //REMOVE LATER
 
     private final MessageService messageService;
     private final UserService userService;
@@ -22,36 +22,36 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
-    @PostMapping("/{id}/message")
-    public void sendNewTextMessage(@PathVariable("id") String userId, MessageDto msg) throws UserNotFoundException {
-        if(!userService.existsUser(userId)){
-            throw new UserNotFoundException(userId);
+    @PostMapping("/{name}/message")
+    public void sendNewTextMessage(@PathVariable("name") String userName, MessageDto msg) throws UserNotFoundException {
+        if(!userService.existsUser(userName)){
+            throw new UserNotFoundException(userName);
         }
 
         Message eventMessage = Message.builder()
                 .messageType(MessageType.TEXT)
                 .content(msg.getContent())
-                .recipient(userId)
+                .recipient(userName)
                 .recipientType(RecipientType.USER)
-                .sender(MY_USER_ID_TEMP)
+                .sender(MY_USER_NAME_TEMP)
                 .build();
 
         messageService.sendMessage(eventMessage);
     }
 
     @Override
-    @PostMapping("/{id}/file")
-    public void sendNewFileMessage(@PathVariable("id") String userId, MessageDto msg) throws UserNotFoundException {
-        if(!userService.existsUser(userId)){
-            throw new UserNotFoundException(userId);
+    @PostMapping("/{name}/file")
+    public void sendNewFileMessage(@PathVariable("name") String userName, MessageDto msg) throws UserNotFoundException {
+        if(!userService.existsUser(userName)){
+            throw new UserNotFoundException(userName);
         }
 
         Message eventMessage = Message.builder()
                 .messageType(MessageType.FILE)
                 .content("RANDOM_HASH_PENDING")
-                .recipient(userId)
+                .recipient(userName)
                 .recipientType(RecipientType.USER)
-                .sender(MY_USER_ID_TEMP)
+                .sender(MY_USER_NAME_TEMP)
                 .build();
 
         messageService.sendMessage(eventMessage);

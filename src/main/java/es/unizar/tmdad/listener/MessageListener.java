@@ -36,11 +36,11 @@ public class MessageListener {
         switch (msg.getEvent()){
 
             case ADD_USER:
-                UserEntity addedUser = UserEntity.builder().id(Long.valueOf(msg.getSubject())).build();
+                UserEntity addedUser = UserEntity.builder().name(msg.getSubject()).build();
                 userRepository.save(addedUser);
                 break;
             case DELETE_USER:
-                userRepository.deleteById(Long.valueOf(msg.getSubject()));
+                userRepository.deleteById(msg.getSubject());
                 break;
             case ADD_ROOM:
                 break;
