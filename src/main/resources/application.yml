@@ -21,8 +21,6 @@ spring:
     password: postgres
 
 chat:
-  queues:
-    output: "na"
   exchanges:
     input: "user-events"
     output: "incoming-messages"

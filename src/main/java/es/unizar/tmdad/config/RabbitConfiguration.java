@@ -22,9 +22,6 @@ public class RabbitConfiguration {
     @Value("${chat.exchanges.input}")
     private String usersExchangeName;
 
-    @Value("${chat.queues.output}")
-    private String queueName;
-
     @Value("${spring.application.name}")
     private String appName;
 
