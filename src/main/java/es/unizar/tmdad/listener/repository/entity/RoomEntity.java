@@ -1,10 +1,6 @@
-package es.unizar.tmdad.repository.entity;
+package es.unizar.tmdad.listener.repository.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity(name = "rooms")
+@Builder
 @Getter
 @Setter
 @ToString
@@ -35,4 +32,6 @@ public class RoomEntity {
     )
     @ToString.Exclude
     Set<UserEntity> users = new HashSet<>();
+
+
 }

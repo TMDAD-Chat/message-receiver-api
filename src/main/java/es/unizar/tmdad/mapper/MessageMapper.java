@@ -1,7 +1,7 @@
 package es.unizar.tmdad.mapper;
 
 import es.unizar.tmdad.adt.message.Message;
-import es.unizar.tmdad.repository.entity.MessageEntity;
+import es.unizar.tmdad.listener.repository.entity.MessageEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
