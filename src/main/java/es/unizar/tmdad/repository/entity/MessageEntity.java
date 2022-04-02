@@ -1,4 +1,4 @@
-package es.unizar.tmdad.listener.repository.entity;
+package es.unizar.tmdad.repository.entity;
 
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

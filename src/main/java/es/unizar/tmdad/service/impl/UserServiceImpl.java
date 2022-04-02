@@ -1,6 +1,6 @@
 package es.unizar.tmdad.service.impl;
 
-import es.unizar.tmdad.listener.repository.UserRepository;
+import es.unizar.tmdad.repository.UserRepository;
 import es.unizar.tmdad.service.UserService;
 import org.springframework.stereotype.Service;
 

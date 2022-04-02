@@ -1,6 +1,6 @@
-package es.unizar.tmdad.listener.repository;
+package es.unizar.tmdad.repository;
 
-import es.unizar.tmdad.listener.repository.entity.RoomEntity;
+import es.unizar.tmdad.repository.entity.RoomEntity;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

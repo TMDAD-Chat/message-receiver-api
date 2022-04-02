@@ -3,18 +3,14 @@ package es.unizar.tmdad.listener;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.unizar.tmdad.adt.user.UserInEvent;
-import es.unizar.tmdad.listener.repository.RoomRepository;
-import es.unizar.tmdad.listener.repository.UserRepository;
-import es.unizar.tmdad.listener.repository.entity.RoomEntity;
-import es.unizar.tmdad.listener.repository.entity.UserEntity;
+import es.unizar.tmdad.repository.RoomRepository;
+import es.unizar.tmdad.repository.UserRepository;
+import es.unizar.tmdad.repository.entity.RoomEntity;
+import es.unizar.tmdad.repository.entity.UserEntity;
 import es.unizar.tmdad.service.impl.UserServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Component
 @Slf4j
