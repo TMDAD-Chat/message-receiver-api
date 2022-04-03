@@ -32,7 +32,7 @@ public class MessageEntity {
     @Column(nullable = false)
     private String sender;
 
-    @Column(nullable = false)
+    @Column()
     private String recipient;
 
     @Column(name = "recipient_type", nullable = false)

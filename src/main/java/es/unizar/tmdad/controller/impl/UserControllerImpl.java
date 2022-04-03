@@ -31,12 +31,10 @@ public class UserControllerImpl implements UserController {
         Message eventMessage = Message.builder()
                 .messageType(MessageType.TEXT)
                 .content(msg.getContent())
-                .recipient(userName)
-                .recipientType(RecipientType.USER)
                 .sender(MY_USER_NAME_TEMP)
                 .build();
 
-        messageService.sendMessage(eventMessage);
+        messageService.sendMessage(eventMessage, userName, RecipientType.USER);
     }
 
     @Override
@@ -49,11 +47,9 @@ public class UserControllerImpl implements UserController {
         Message eventMessage = Message.builder()
                 .messageType(MessageType.FILE)
                 .content("RANDOM_HASH_PENDING")
-                .recipient(userName)
-                .recipientType(RecipientType.USER)
                 .sender(MY_USER_NAME_TEMP)
                 .build();
 
-        messageService.sendMessage(eventMessage);
+        messageService.sendMessage(eventMessage, userName, RecipientType.USER);
     }
 }

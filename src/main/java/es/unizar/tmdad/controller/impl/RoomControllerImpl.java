@@ -29,12 +29,10 @@ public class RoomControllerImpl implements RoomController {
         Message eventMessage = Message.builder()
                 .messageType(MessageType.TEXT)
                 .content(msg.getContent())
-                .recipient(userId)
-                .recipientType(RecipientType.ROOM)
                 .sender(MY_USER_ID_TEMP)
                 .build();
 
-        messageService.sendMessage(eventMessage);
+        messageService.sendMessage(eventMessage, userId, RecipientType.ROOM);
     }
 
     @Override
@@ -43,11 +41,9 @@ public class RoomControllerImpl implements RoomController {
         Message eventMessage = Message.builder()
                 .messageType(MessageType.FILE)
                 .content("RANDOM_HASH_PENDING")
-                .recipient(userId)
-                .recipientType(RecipientType.ROOM)
                 .sender(MY_USER_ID_TEMP)
                 .build();
 
-        messageService.sendMessage(eventMessage);
+        messageService.sendMessage(eventMessage, userId, RecipientType.USER);
     }
 }
