@@ -1,8 +1,8 @@
 package es.unizar.tmdad.service.impl;
 
-import es.unizar.tmdad.repository.*;
-import es.unizar.tmdad.service.*;
-import org.springframework.stereotype.*;
+import es.unizar.tmdad.repository.UserRepository;
+import es.unizar.tmdad.service.UserService;
+import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImpl implements UserService {
