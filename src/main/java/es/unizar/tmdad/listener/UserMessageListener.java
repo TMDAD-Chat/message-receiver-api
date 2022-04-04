@@ -11,8 +11,13 @@ import es.unizar.tmdad.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -34,6 +39,7 @@ public class UserMessageListener {
         this.userService = userService;
     }
 
+    @Transactional(propagation = Propagation.REQUIRED)
     public void apply(String input) throws JsonProcessingException {
         UserInEvent msg = objectMapper.readValue(input, UserInEvent.class);
         log.info("Processing user event {}.", msg);
@@ -55,17 +61,25 @@ public class UserMessageListener {
                 roomRepository.deleteById(Long.parseLong(msg.getSubject()));
                 break;
             case ADD_USER_TO_ROOM:
-                if(userService.existsUser(msg.getSubject())){
-                    RoomEntity addedUserToRoom= RoomEntity.builder().id(Long.parseLong(msg.getSubject())).build();
-                    addedUserToRoom.getUsers().add(UserEntity.builder().name(msg.getSubject()).build());
-                    roomRepository.save(addedUserToRoom);
+                if(userService.existsUser(msg.getArgument())){
+                    Optional<RoomEntity> addedUserToRoom= roomRepository.findById(Long.valueOf(msg.getSubject()));
+                    addedUserToRoom.ifPresent(room -> {
+                        room.getUsers().add(UserEntity.builder().name(msg.getArgument()).build());
+                        roomRepository.save(room);
+                    });
                 }
                 break;
             case REMOVE_USER_FROM_ROOM:
-                if(userService.existsUser(msg.getSubject())){
-                    RoomEntity removedUserToRoom = RoomEntity.builder().id(Long.parseLong(msg.getSubject())).build();
-                    removedUserToRoom.getUsers().remove(UserEntity.builder().name(msg.getSubject()).build());
-                    roomRepository.save(removedUserToRoom);
+                if(userService.existsUser(msg.getArgument())){
+                    Optional<RoomEntity> removedUserToRoom = roomRepository.findById(Long.valueOf(msg.getSubject()));
+                    removedUserToRoom.ifPresent(room -> {
+                        var updatedUsers = room.getUsers().stream()
+                                .filter(userEntity -> !Objects.equals(userEntity.getName(), msg.getArgument()))
+                                .collect(Collectors.toSet());
+
+                        room.setUsers(updatedUsers);
+                        roomRepository.save(room);
+                    });
                 }
                 break;
         }
