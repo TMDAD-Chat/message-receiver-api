@@ -30,12 +30,10 @@ public class MessageControllerImpl implements MessageController {
         Message eventMessage = Message.builder()
                 .messageType(MessageType.TEXT)
                 .content(msg.getContent())
-                .recipient(null)
-                .recipientType(RecipientType.GLOBAL)
                 .sender(MY_USER_NAME_TEMP)
                 .build();
 
-        messageService.sendMessage(eventMessage);
+        messageService.sendMessage(eventMessage, null, RecipientType.GLOBAL);
     }
 
 }

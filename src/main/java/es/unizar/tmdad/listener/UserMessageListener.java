@@ -7,44 +7,47 @@ import es.unizar.tmdad.repository.RoomRepository;
 import es.unizar.tmdad.repository.UserRepository;
 import es.unizar.tmdad.repository.entity.RoomEntity;
 import es.unizar.tmdad.repository.entity.UserEntity;
-import es.unizar.tmdad.service.impl.UserServiceImpl;
+import es.unizar.tmdad.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class MessageListener {
+public class UserMessageListener {
 
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
 
     @Value("${chat.exchanges.output:message-pcs}")
     private String topicExchangeName;
 
-    public MessageListener(ObjectMapper objectMapper, UserRepository userRepository,RoomRepository roomRepository,UserServiceImpl userService) {
+    public UserMessageListener(ObjectMapper objectMapper, UserRepository userRepository,RoomRepository roomRepository, UserService userService) {
         this.objectMapper = objectMapper;
         this.userRepository = userRepository;
         this.roomRepository=roomRepository;
         this.userService = userService;
     }
 
-    private void logs(UserInEvent in){
-        log.info("Processing user event {}.", in);
-    }
-
+    @Transactional(propagation = Propagation.REQUIRED)
     public void apply(String input) throws JsonProcessingException {
         UserInEvent msg = objectMapper.readValue(input, UserInEvent.class);
-        this.logs(msg);
+        log.info("Processing user event {}.", msg);
 
-        //TODO SAVE TO DB
         switch (msg.getEvent()){
 
             case ADD_USER:
-                UserEntity addedUser = UserEntity.builder().name(msg.getSubject()).build();
+                UserEntity addedUser = new UserEntity(msg.getSubject(), new HashSet<>());
                 userRepository.save(addedUser);
                 break;
             case DELETE_USER:
@@ -58,17 +61,25 @@ public class MessageListener {
                 roomRepository.deleteById(Long.parseLong(msg.getSubject()));
                 break;
             case ADD_USER_TO_ROOM:
-                if(userService.existsUser(msg.getSubject())){
-                    RoomEntity addedUserToRoom= RoomEntity.builder().id(Long.parseLong(msg.getSubject())).build();
-                    addedUserToRoom.getUsers().add(UserEntity.builder().name(msg.getSubject()).build());
-                    roomRepository.save(addedUserToRoom);
+                if(userService.existsUser(msg.getArgument())){
+                    Optional<RoomEntity> addedUserToRoom= roomRepository.findById(Long.valueOf(msg.getSubject()));
+                    addedUserToRoom.ifPresent(room -> {
+                        room.getUsers().add(UserEntity.builder().name(msg.getArgument()).build());
+                        roomRepository.save(room);
+                    });
                 }
                 break;
             case REMOVE_USER_FROM_ROOM:
-                if(userService.existsUser(msg.getSubject())){
-                    RoomEntity removedUserToRoom = RoomEntity.builder().id(Long.parseLong(msg.getSubject())).build();
-                    removedUserToRoom.getUsers().remove(UserEntity.builder().name(msg.getSubject()).build());
-                    roomRepository.save(removedUserToRoom);
+                if(userService.existsUser(msg.getArgument())){
+                    Optional<RoomEntity> removedUserToRoom = roomRepository.findById(Long.valueOf(msg.getSubject()));
+                    removedUserToRoom.ifPresent(room -> {
+                        var updatedUsers = room.getUsers().stream()
+                                .filter(userEntity -> !Objects.equals(userEntity.getName(), msg.getArgument()))
+                                .collect(Collectors.toSet());
+
+                        room.setUsers(updatedUsers);
+                        roomRepository.save(room);
+                    });
                 }
                 break;
         }

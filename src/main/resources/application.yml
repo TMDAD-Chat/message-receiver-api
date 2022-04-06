@@ -11,9 +11,6 @@ spring:
     show-sql: true
   application:
     name: "message-receiver-api"
-  h2:
-    console:
-      enabled: true
 
   datasource:
     url: jdbc:postgresql://localhost:5432/message-receiver-api
@@ -23,4 +20,6 @@ spring:
 chat:
   exchanges:
     input: "user-events"
+    old-messages: "old-message-requests"
     output: "incoming-messages"
+    reprocess-messages: "reprocess-messages"
