@@ -5,11 +5,10 @@ import es.unizar.tmdad.adt.message.MessageType;
 import es.unizar.tmdad.adt.message.RecipientType;
 import es.unizar.tmdad.controller.RoomController;
 import es.unizar.tmdad.dto.MessageDto;
+import es.unizar.tmdad.service.FileService;
 import es.unizar.tmdad.service.MessageService;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/room")
@@ -18,9 +17,11 @@ public class RoomControllerImpl implements RoomController {
     private final String MY_USER_ID_TEMP = "1"; //REMOVE LATER
 
     private final MessageService messageService;
+    private final FileService fileService;
 
-    public RoomControllerImpl(MessageService messageService) {
+    public RoomControllerImpl(MessageService messageService, FileService fileService) {
         this.messageService = messageService;
+        this.fileService = fileService;
     }
 
     @Override
@@ -37,10 +38,11 @@ public class RoomControllerImpl implements RoomController {
 
     @Override
     @PostMapping("/{id}/file")
-    public void sendNewFileMessage(@PathVariable("id") String userId, MessageDto msg) {
+    public void sendNewFileMessage(@PathVariable("id") String userId, @RequestParam("file") MultipartFile file) {
+        String fileName = this.fileService.store(file, userId).block();
         Message eventMessage = Message.builder()
                 .messageType(MessageType.FILE)
-                .content("RANDOM_HASH_PENDING")
+                .content(fileName)
                 .sender(MY_USER_ID_TEMP)
                 .build();
 
