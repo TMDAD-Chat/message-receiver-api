@@ -9,6 +9,7 @@ import java.util.Date;
 @Builder
 public class Message {
 
+    private Long id;
     private MessageType messageType;
     private String content;
     private String sender;

@@ -3,6 +3,7 @@ package es.unizar.tmdad.service;
 import es.unizar.tmdad.adt.message.Message;
 import es.unizar.tmdad.adt.message.MessageList;
 import es.unizar.tmdad.adt.message.RecipientType;
+import es.unizar.tmdad.dto.ConversationDto;
 
 public interface MessageService {
 
@@ -10,4 +11,7 @@ public interface MessageService {
     void sendMessages(MessageList message);
     void sendMessages(MessageList message, boolean areOldMessages);
 
+    ConversationDto getConversations(String userMail);
+
+    void getLastMessagesInPrivateChat(String user1, String user2);
 }
