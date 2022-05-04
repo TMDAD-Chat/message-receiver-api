@@ -120,4 +120,22 @@ public class MessageServiceImpl implements MessageService {
             this.sendMessages(messagesReceivedByUser, true);
         }
     }
+
+    @Override
+    public void getLastGlobalMessagesInPrivateChat(String user1) {
+        var messageList = this.repository.findMessageEntitiesByRecipientTypeOrderByCreationTimestampDesc(RecipientType.GLOBAL.toString(), Pageable.ofSize(30));
+
+        var globalMessages = mapper.mapMessageEntities(messageList);
+
+        if(Objects.nonNull(globalMessages) && !globalMessages.isEmpty()) {
+            MessageList messagesSentByUser = MessageList.builder()
+                    .requestId("REQUESTED_BY_SENDER")
+                    .recipient(user1)
+                    .recipientType(RecipientType.GLOBAL)
+                    .messages(globalMessages)
+                    .build();
+
+            this.sendMessages(messagesSentByUser, true);
+        }
+    }
 }

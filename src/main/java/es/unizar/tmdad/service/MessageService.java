@@ -14,4 +14,6 @@ public interface MessageService {
     ConversationDto getConversations(String userMail);
 
     void getLastMessagesInPrivateChat(String user1, String user2);
+
+    void getLastGlobalMessagesInPrivateChat(String user1);
 }

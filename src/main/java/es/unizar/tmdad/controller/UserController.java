@@ -18,6 +18,9 @@ public interface UserController {
 
     ConversationDto getConversationsForUser(String userId) throws UserNotFoundException;
 
+    @GetMapping("/{mail}/conversation/global")
+    void getLastGlobalMessages(@PathVariable("mail") String user1) throws UserNotFoundException;
+
     @GetMapping("/{mail}/conversation/{other}")
     void getLastMessagesInPrivateChat(@PathVariable("mail") String user1, @PathVariable("other") String user2) throws UserNotFoundException;
 }
