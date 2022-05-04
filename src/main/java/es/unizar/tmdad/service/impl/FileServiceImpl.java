@@ -1,6 +1,7 @@
 package es.unizar.tmdad.service.impl;
 
 import es.unizar.tmdad.service.FileService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreaker;
 import org.springframework.cloud.client.circuitbreaker.ReactiveCircuitBreakerFactory;
@@ -13,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 
 @Service
+@Slf4j
 public class FileServiceImpl implements FileService {
 
     @Value("${chat.file-api}")
@@ -22,7 +24,6 @@ public class FileServiceImpl implements FileService {
 
     public FileServiceImpl(ReactiveCircuitBreakerFactory circuitBreakerFactory) {
         this.webClient = WebClient.builder()
-                .baseUrl(fileApiUrl)
                 .defaultHeader(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .build();
         this.saveFileCircuitBreaker = circuitBreakerFactory.create("slow");
@@ -30,15 +31,13 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public Mono<String> store(MultipartFile file, String name) {
-        System.out.println(name);
         return saveFileCircuitBreaker.run(
-                webClient.post().uri("/")
+                webClient.post().uri(fileApiUrl + "/")
                         .body(BodyInserters
                                 .fromMultipartData("chat", name)
                                 .with("file", file.getResource()))
                         .retrieve()
-                        .bodyToMono(String.class),
-                throwable -> Mono.just("Default image")
+                        .bodyToMono(String.class)
         );
     }
 }
