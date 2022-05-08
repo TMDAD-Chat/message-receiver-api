@@ -77,6 +77,16 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
+    @GetMapping("/{mail}/conversation/global")
+    public void getLastGlobalMessages(@PathVariable("mail") String user1) throws UserNotFoundException {
+        if(!userService.existsUser(user1)){
+            throw new UserNotFoundException(user1);
+        }
+
+        messageService.getLastGlobalMessagesInPrivateChat(user1);
+    }
+
+    @Override
     @GetMapping("/{mail}/conversation/{other}")
     public void getLastMessagesInPrivateChat(@PathVariable("mail") String user1, @PathVariable("other") String user2) throws UserNotFoundException {
         if(!userService.existsUser(user1)){

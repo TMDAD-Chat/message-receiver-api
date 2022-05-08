@@ -21,4 +21,6 @@ public interface MessageRepository extends CrudRepository<MessageEntity, String>
 
     @Query("FROM messages WHERE (sender = ?1 and recipient = ?2) or (recipient = ?1 and sender = ?2) ORDER BY creationTimestamp DESC")
     List<MessageEntity> findAllMessagesSentBetween(String user1, String user2, Pageable page);
+
+    List<MessageEntity> findMessageEntitiesByRecipientTypeOrderByCreationTimestampDesc(String recipientType, Pageable ofSize);
 }
