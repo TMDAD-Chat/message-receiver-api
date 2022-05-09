@@ -1,5 +1,6 @@
 package es.unizar.tmdad.repository.entity;
 
+import es.unizar.tmdad.repository.converter.AttributeEncryptor;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -26,7 +27,8 @@ public class MessageEntity {
     @Column(name = "message_type", nullable = false)
     private String messageType;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 2048)
+    @Convert(converter = AttributeEncryptor.class)
     private String content;
 
     @Column(nullable = false)

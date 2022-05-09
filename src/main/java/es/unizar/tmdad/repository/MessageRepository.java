@@ -16,6 +16,8 @@ public interface MessageRepository extends CrudRepository<MessageEntity, String>
     List<MessageEntity> findAllByRecipientAndRecipientTypeAndCreationTimestampIsAfterOrderByCreationTimestampAsc(String recipient, String recipientType, Date creationTimestamp);
     List<MessageEntity> findAllByRecipientAndRecipientTypeAndCreationTimestampIsAfterOrderByCreationTimestampAsc(String recipient, String recipientType, Date creationTimestamp, Pageable page);
 
+    void deleteAllBySenderAndRecipientType(String sender, String recipientType);
+
     @Query("SELECT new es.unizar.tmdad.repository.entity.ConversationFakeEntity(sender) FROM messages WHERE recipient = ?1 AND recipientType <> 'GLOBAL' GROUP BY sender")
     List<ConversationFakeEntity> findConversationsOfUser(String sender);
 
@@ -23,4 +25,5 @@ public interface MessageRepository extends CrudRepository<MessageEntity, String>
     List<MessageEntity> findAllMessagesSentBetween(String user1, String user2, Pageable page);
 
     List<MessageEntity> findMessageEntitiesByRecipientTypeOrderByCreationTimestampDesc(String recipientType, Pageable ofSize);
+    List<MessageEntity> findMessageEntitiesByRecipientTypeAndRecipientOrderByCreationTimestampDesc(String recipientType, String recipient, Pageable ofSize);
 }

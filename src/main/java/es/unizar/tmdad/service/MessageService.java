@@ -16,4 +16,6 @@ public interface MessageService {
     void getLastMessagesInPrivateChat(String user1, String user2);
 
     void getLastGlobalMessagesInPrivateChat(String user1);
+
+    void getLastMessagesInRoom(Long room, String user);
 }
