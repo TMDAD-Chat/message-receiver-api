@@ -1,6 +1,7 @@
 package es.unizar.tmdad.service.impl;
 
 import es.unizar.tmdad.repository.UserRepository;
+import es.unizar.tmdad.repository.entity.UserEntity;
 import es.unizar.tmdad.service.UserService;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean existsUser(String userName) {
-        return userRepository.findById(userName).isPresent();
+        return userRepository.existsById(userName);
+    }
+
+    @Override
+    public UserEntity getUser(String argument) {
+        return userRepository.findById(argument).orElseThrow();
     }
 }

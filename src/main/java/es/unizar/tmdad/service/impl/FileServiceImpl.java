@@ -12,6 +12,9 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 
 @Service
 @Slf4j
@@ -38,6 +41,7 @@ public class FileServiceImpl implements FileService {
                                 .with("file", file.getResource()))
                         .retrieve()
                         .bodyToMono(String.class)
+                        .timeout(Duration.of(100000, ChronoUnit.MILLIS))
         );
     }
 }

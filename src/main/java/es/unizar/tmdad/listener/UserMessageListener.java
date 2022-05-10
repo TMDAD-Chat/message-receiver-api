@@ -2,7 +2,9 @@ package es.unizar.tmdad.listener;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import es.unizar.tmdad.adt.message.RecipientType;
 import es.unizar.tmdad.adt.user.UserInEvent;
+import es.unizar.tmdad.repository.MessageRepository;
 import es.unizar.tmdad.repository.RoomRepository;
 import es.unizar.tmdad.repository.UserRepository;
 import es.unizar.tmdad.repository.entity.RoomEntity;
@@ -25,6 +27,7 @@ public class UserMessageListener {
 
     private final ObjectMapper objectMapper;
     private final UserRepository userRepository;
+    private final MessageRepository messageRepository;
     private final RoomRepository roomRepository;
     private final UserService userService;
 
@@ -32,9 +35,10 @@ public class UserMessageListener {
     @Value("${chat.exchanges.output:message-pcs}")
     private String topicExchangeName;
 
-    public UserMessageListener(ObjectMapper objectMapper, UserRepository userRepository,RoomRepository roomRepository, UserService userService) {
+    public UserMessageListener(ObjectMapper objectMapper, UserRepository userRepository, MessageRepository messageRepository, RoomRepository roomRepository, UserService userService) {
         this.objectMapper = objectMapper;
         this.userRepository = userRepository;
+        this.messageRepository = messageRepository;
         this.roomRepository=roomRepository;
         this.userService = userService;
     }
@@ -52,6 +56,7 @@ public class UserMessageListener {
                 break;
             case DELETE_USER:
                 userRepository.deleteById(msg.getSubject());
+                messageRepository.deleteAllBySenderAndRecipientType(msg.getSubject(), RecipientType.USER.name());
                 break;
             case ADD_ROOM:
                 RoomEntity roomEntity = RoomEntity.builder().id(Long.parseLong(msg.getSubject())).build();
@@ -59,12 +64,13 @@ public class UserMessageListener {
                 break;
             case DELETE_ROOM:
                 roomRepository.deleteById(Long.parseLong(msg.getSubject()));
+                //messageRepository.deleteAllByRecipientAndRecipientType(msg.getSubject(), RecipientType.ROOM.name());
                 break;
             case ADD_USER_TO_ROOM:
                 if(userService.existsUser(msg.getArgument())){
                     Optional<RoomEntity> addedUserToRoom= roomRepository.findById(Long.valueOf(msg.getSubject()));
                     addedUserToRoom.ifPresent(room -> {
-                        room.getUsers().add(UserEntity.builder().name(msg.getArgument()).build());
+                        room.getUsers().add(userService.getUser(msg.getArgument()));
                         roomRepository.save(room);
                     });
                 }

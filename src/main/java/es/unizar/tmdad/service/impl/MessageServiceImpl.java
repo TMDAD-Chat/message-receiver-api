@@ -98,7 +98,7 @@ public class MessageServiceImpl implements MessageService {
         var messagesBySender = mapper.mapMessageEntities(splittedMessages.get(Boolean.TRUE));
         var messagesByReceiver = mapper.mapMessageEntities(splittedMessages.get(Boolean.FALSE));
 
-        if(Objects.nonNull(messagesBySender) && !messagesBySender.isEmpty()) {
+        if (Objects.nonNull(messagesBySender) && !messagesBySender.isEmpty()) {
             MessageList messagesSentByUser = MessageList.builder()
                     .requestId("REQUESTED_BY_SENDER")
                     .recipient(user2)
@@ -109,7 +109,7 @@ public class MessageServiceImpl implements MessageService {
             this.sendMessages(messagesSentByUser, true);
         }
 
-        if(Objects.nonNull(messagesByReceiver) && !messagesByReceiver.isEmpty()) {
+        if (Objects.nonNull(messagesByReceiver) && !messagesByReceiver.isEmpty()) {
             MessageList messagesReceivedByUser = MessageList.builder()
                     .requestId("REQUESTED_BY_RECIPIENT")
                     .recipient(user1)
@@ -123,7 +123,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void getLastGlobalMessagesInPrivateChat(String user1) {
-        var messageList = this.repository.findMessageEntitiesByRecipientTypeOrderByCreationTimestampDesc(RecipientType.GLOBAL.toString(), Pageable.ofSize(30));
+        var messageList = this.repository.findMessageEntitiesByRecipientTypeOrderByCreationTimestampDesc(RecipientType.GLOBAL.name(), Pageable.ofSize(30));
 
         var globalMessages = mapper.mapMessageEntities(messageList);
 
@@ -137,5 +137,22 @@ public class MessageServiceImpl implements MessageService {
 
             this.sendMessages(messagesSentByUser, true);
         }
+    }
+
+    @Override
+    public void getLastMessagesInRoom(Long room, String user) {
+        var messageList = this.repository.findMessageEntitiesByRecipientTypeAndRecipientOrderByCreationTimestampDesc(
+                RecipientType.ROOM.name(), String.valueOf(room), Pageable.ofSize(30));
+
+        var mappedMessages = mapper.mapMessageEntities(messageList);
+
+        MessageList messagesSentBySender = MessageList.builder()
+                .requestId("REQUESTED_BY=>" + user)
+                .recipient(String.valueOf(room))
+                .recipientType(RecipientType.ROOM)
+                .messages(mappedMessages)
+                .build();
+
+        this.sendMessages(messagesSentBySender, true);
     }
 }
