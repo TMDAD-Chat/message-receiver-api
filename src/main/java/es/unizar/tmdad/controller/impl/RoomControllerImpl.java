@@ -6,6 +6,7 @@ import es.unizar.tmdad.adt.message.RecipientType;
 import es.unizar.tmdad.controller.RoomController;
 import es.unizar.tmdad.controller.exception.RoomNotFoundException;
 import es.unizar.tmdad.controller.exception.UserNotFoundException;
+import es.unizar.tmdad.controller.exception.UserNotInTheRoomException;
 import es.unizar.tmdad.dto.MessageDto;
 import es.unizar.tmdad.service.FileService;
 import es.unizar.tmdad.service.MessageService;
@@ -38,13 +39,19 @@ public class RoomControllerImpl implements RoomController {
 
     @Override
     @PostMapping("/{id}/message")
-    public void sendNewTextMessage(@PathVariable("id") Long roomId, @RequestBody MessageDto msg) throws UserNotFoundException, RoomNotFoundException {
+    public void sendNewTextMessage(@PathVariable("id") Long roomId, @RequestBody MessageDto msg) throws UserNotFoundException, RoomNotFoundException,UserNotInTheRoomException {
         if(!userService.existsUser(msg.getSender())){
             throw new UserNotFoundException(msg.getSender());
         }
+
         if(!roomService.existsRoom(roomId)){
             throw new RoomNotFoundException(roomId);
         }
+
+        if(!roomService.isUserInTheRoom(msg.getSender(),roomId)){
+            throw new UserNotInTheRoomException(roomId,msg.getSender());
+        }
+
         Message eventMessage = Message.builder()
                 .messageType(MessageType.TEXT)
                 .content(msg.getContent())
@@ -56,10 +63,15 @@ public class RoomControllerImpl implements RoomController {
 
     @Override
     @PostMapping("/{id}/file")
-    public void sendNewFileMessage(@PathVariable("id") Long roomId, @RequestParam("sender") String sender, @RequestParam("file") MultipartFile file) throws UserNotFoundException {
+    public void sendNewFileMessage(@PathVariable("id") Long roomId, @RequestParam("sender") String sender, @RequestParam("file") MultipartFile file) throws UserNotFoundException,UserNotInTheRoomException {
         if(!userService.existsUser(sender)){
             throw new UserNotFoundException(sender);
         }
+
+        if(!roomService.isUserInTheRoom(sender,roomId)){
+            throw new UserNotInTheRoomException(roomId,sender);
+        }
+
 
         String fileName = this.fileService.store(file, String.valueOf(roomId)).block();
         Message eventMessage = Message.builder()
