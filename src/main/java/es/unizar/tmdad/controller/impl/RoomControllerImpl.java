@@ -14,6 +14,7 @@ import es.unizar.tmdad.service.FileService;
 import es.unizar.tmdad.service.MessageService;
 import es.unizar.tmdad.service.RoomService;
 import es.unizar.tmdad.service.UserService;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,6 +45,7 @@ public class RoomControllerImpl implements RoomController {
 
     @Override
     @PostMapping("/{id}/message")
+    @Transactional
     public void sendNewTextMessage(@PathVariable("id") Long roomId, @RequestBody MessageDto msg, @RequestHeader("X-Auth-User") String authEmail) throws UserNotFoundException, RoomNotFoundException, UserNotInTheRoomException, UnauthorizedException, InvalidMessageException {
         if(!Objects.equals(authEmail, msg.getSender())){
             throw new UnauthorizedException("Auth email does not match sender email.");
@@ -76,6 +78,7 @@ public class RoomControllerImpl implements RoomController {
 
     @Override
     @PostMapping("/{id}/file")
+    @Transactional
     public void sendNewFileMessage(@PathVariable("id") Long roomId, @RequestHeader("X-Auth-User") String sender, @RequestHeader("X-Auth-Firebase") String token, @RequestParam("file") MultipartFile file) throws UserNotFoundException,UserNotInTheRoomException {
         if(!userService.existsUser(sender)){
             throw new UserNotFoundException(sender);
@@ -98,6 +101,7 @@ public class RoomControllerImpl implements RoomController {
 
     @Override
     @GetMapping("/{roomId}/conversation")
+    @Transactional
     public void getLastMessagesInRoomFor(@PathVariable("roomId") Long room, @RequestHeader("X-Auth-User") String user) throws UserNotFoundException, RoomNotFoundException, UserNotInTheRoomException {
         if(!userService.existsUser(user)){
             throw new UserNotFoundException(user);

@@ -64,7 +64,10 @@ public class UserMessageListener {
                 userRepository.save(updatedUser);
                 break;
             case ADD_ROOM:
-                RoomEntity roomEntity = RoomEntity.builder().id(Long.parseLong(msg.getSubject())).build();
+                RoomEntity roomEntity = RoomEntity.builder()
+                    .id(Long.parseLong(msg.getSubject()))
+                        .users(new HashSet<>())
+                        .build();
                 var ownerEntity = this.userRepository.findById(msg.getArgument());
                 ownerEntity.ifPresent(owner -> {
                     roomEntity.getUsers().add(owner);

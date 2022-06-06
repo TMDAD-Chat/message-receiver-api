@@ -55,7 +55,7 @@ public interface RoomController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Message was sent and will be received by the clients in a few seconds.")
     })
-    @GetMapping("/{roomId}/conversation/{mail}")
+    @GetMapping("/{roomId}/conversation")
     void getLastMessagesInRoomFor(@Parameter(description = "Room identifier") @PathVariable("roomId") Long room,
-                                  @Parameter(description = "Email of the user who belongs to this room") @PathVariable("mail") String user) throws UserNotFoundException, RoomNotFoundException,UserNotInTheRoomException;
+                                  @Parameter(description = "Email of the user who belongs to this room") String user) throws UserNotFoundException, RoomNotFoundException,UserNotInTheRoomException;
 }
