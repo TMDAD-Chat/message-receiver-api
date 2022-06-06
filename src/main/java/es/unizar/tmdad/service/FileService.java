@@ -4,5 +4,5 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
 public interface FileService {
-    Mono<String> store(MultipartFile file, String name);
+    Mono<String> store(MultipartFile file, String name, String firebaseToken, String firebaseEmail);
 }

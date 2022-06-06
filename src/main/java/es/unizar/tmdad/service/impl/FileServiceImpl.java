@@ -33,9 +33,11 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Mono<String> store(MultipartFile file, String name) {
+    public Mono<String> store(MultipartFile file, String name, String firebaseToken, String firebaseEmail) {
         return saveFileCircuitBreaker.run(
                 webClient.post().uri(fileApiUrl + "/")
+                        .header("X-Auth-User", firebaseEmail)
+                        .header("X-Auth-Firebase", firebaseToken)
                         .body(BodyInserters
                                 .fromMultipartData("chat", name)
                                 .with("file", file.getResource()))

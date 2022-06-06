@@ -35,3 +35,7 @@ chat:
   file-api: "http://localhost:8080"
   private-key: "/opt/message-receiver-api.key"
   public-key: "/opt/message-receiver-api.crt"
+
+firebase:
+  bucket-name: tmdad-chat-app.appspot.com
+  service-account: ./tmdad-chat-app-firebase-adminsdk.json
