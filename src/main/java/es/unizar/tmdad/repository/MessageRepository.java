@@ -26,4 +26,6 @@ public interface MessageRepository extends CrudRepository<MessageEntity, String>
 
     List<MessageEntity> findMessageEntitiesByRecipientTypeOrderByCreationTimestampDesc(String recipientType, Pageable ofSize);
     List<MessageEntity> findMessageEntitiesByRecipientTypeAndRecipientOrderByCreationTimestampDesc(String recipientType, String recipient, Pageable ofSize);
+
+    void deleteAllByRecipientAndRecipientType(String recipient, String recipientType);
 }

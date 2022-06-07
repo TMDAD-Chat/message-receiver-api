@@ -51,20 +51,32 @@ public class UserMessageListener {
         switch (msg.getEvent()){
 
             case ADD_USER:
-                UserEntity addedUser = new UserEntity(msg.getSubject(), new HashSet<>());
+                UserEntity addedUser = createNewUser(msg);
                 userRepository.save(addedUser);
                 break;
             case DELETE_USER:
                 userRepository.deleteById(msg.getSubject());
                 messageRepository.deleteAllBySenderAndRecipientType(msg.getSubject(), RecipientType.USER.name());
                 break;
+            case UPDATE_USER_SU_FLAG:
+                var updatedUser = userRepository.findById(msg.getSubject()).orElse(createNewUser(msg));
+                updatedUser.setSuperuser(Boolean.getBoolean(msg.getArgument()));
+                userRepository.save(updatedUser);
+                break;
             case ADD_ROOM:
-                RoomEntity roomEntity = RoomEntity.builder().id(Long.parseLong(msg.getSubject())).build();
-                roomRepository.save(roomEntity);
+                RoomEntity roomEntity = RoomEntity.builder()
+                    .id(Long.parseLong(msg.getSubject()))
+                        .users(new HashSet<>())
+                        .build();
+                var ownerEntity = this.userRepository.findById(msg.getArgument());
+                ownerEntity.ifPresent(owner -> {
+                    roomEntity.getUsers().add(owner);
+                    roomRepository.save(roomEntity);
+                });
                 break;
             case DELETE_ROOM:
                 roomRepository.deleteById(Long.parseLong(msg.getSubject()));
-                //messageRepository.deleteAllByRecipientAndRecipientType(msg.getSubject(), RecipientType.ROOM.name());
+                messageRepository.deleteAllByRecipientAndRecipientType(msg.getSubject(), RecipientType.ROOM.name());
                 break;
             case ADD_USER_TO_ROOM:
                 if(userService.existsUser(msg.getArgument())){
@@ -89,5 +101,9 @@ public class UserMessageListener {
                 }
                 break;
         }
+    }
+
+    private UserEntity createNewUser(UserInEvent msg) {
+        return new UserEntity(msg.getSubject(), false, new HashSet<>());
     }
 }
